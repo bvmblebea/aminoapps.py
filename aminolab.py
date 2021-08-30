@@ -35,8 +35,7 @@ class Client():
 			self.sid = request.headers["set-cookie"]
 			self.userId = request.json()["result"]["uid"]
 		except:	print(f"Error >>", request.json()["result"]["api:message"])
-		try:
-			self.sid = self.sid[0: self.sid.index(";")]
+		try:	self.sid = self.sid[0: self.sid.index(";")]
 		except:	pass
 		headers.sid = self.sid
 		headers.userId = self.userId
