@@ -20,14 +20,15 @@ class Client():
 		return value
         
     #example for auth https://github.com/LynxN1/amino_service/tree/5ae29b8115017ecf79108796eb7bb4e7f1c7a6c5 Thanks to LynxN1
-	def auth(self, email: str, password: str):
+	def auth(self, email: str = None, phone: str = None, password: str = None):
 		data = {
 		"auth_type": 0,
-		"email": email,
 		"recaptcha_challenge": self.generate_captcha(),
 		"recaptcha_version": "v3",
 		"secret": password
 		}
+		if email:	data["email"] = email
+		elif phone:	data["phoneNumber"] = phone
 		request = requests.post(f"{self.api}/auth", json=data)
 		self.headers = request.headers
 		self.sid = request.headers["set-cookie"]
@@ -115,20 +116,42 @@ class Client():
 	def vote(self, ndcId, blogId: str = None, wikiId: str = None):
 		data = {"ndcId": ndcId}
 		if blogId: data["logType"] = "blog"; data["postType"] = "blog"; postId = blogId
-		if wikiId: data["logType"] = "wiki"; data["postType"] = "wiki"; postId = wikiId
+		elif wikiId: data["logType"] = "wiki"; data["postType"] = "wiki"; postId = wikiId
 		data["postId"] = postId
-		request = requests.post("https://aminoapps.com/api/vote", json=data, headers=self.headers)
+		request = requests.post(f"{self.api}/vote", json=data, headers=self.headers)
 		return request.json()
 	
 	#unlike
 	def unvote(self, ndcId, blogId: str = None, wikiId: str = None):
 		data = {"ndcId": ndcId}
 		if blogId: data["logType"] = "blog"; data["postType"] = "blog"; postId = blogId
-		if wikiId: data["logType"] = "wiki"; data["postType"] = "wiki"; postId = wikiId
+		elif wikiId: data["logType"] = "wiki"; data["postType"] = "wiki"; postId = wikiId
 		data["postId"] = postId
-		request = requests.post("https://aminoapps.com/api/unvote", json=data, headers=self.headers)
+		request = requests.post(f"{self.api}/unvote", json=data, headers=self.headers)
 		return request.json()
 	
+	#join community
+	def join_community(self, ndcId: str):
+		data = {"ndcId": ndcId}
+		request = requests.post(f"{self.api}/join", json=data, headers=self.headers)
+		return request.json()
+	
+	#request join community
+	def request_join_community(self, ndcId, message: str = None):
+		data = {"message": message, "ndcId": ndcId}
+		request = requests.post(f"{self.api}/request_join", json=data, headers=self.headers)
+		return request.json()
+	
+	#flag chat or user
+	def report(self, ndcId, reason: str, flagType: int, userId: str = None, blogId: str = None, wikiId: str = None, threadId: str = None):
+		data = {"flagType": flagType, "message": reason, "ndcId": f"x{ndcId}"}
+		if userId:	data["objectId"] = userId; data["objectType"] = 0 
+		elif blogId:	data["objectId"] = blogId; data["objectType"] = 1
+		elif wikiId:	data["objectId"] = wikiId; data["objectType"] = 2
+		elif threadId:	data["objectId"] = threadId; data["objectType"] = 12
+		request = requests.post(f"{self.api}/add-flag", json=data, headers=self.headers)
+		return request.json()
+		
 	#function post_blog():
 		
 	def get_web_socket_url(self):
