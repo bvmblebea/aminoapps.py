@@ -41,11 +41,11 @@ class Client():
 		return request.json()
 	
 	#send_message
-	def add_chat_message(self, ndcId, threadId, message):
+	def add_chat_message(self, ndcId, threadId, message: str = None, messageType: int = 0):
 		data = {
 		"ndcId": f"x{ndcId}",
 		"threadId": threadId,
-		"content": message,
+		"content": messageType,
 		"mediaType": 0,
 		"type": 0,
 		"sendFailed": False,
