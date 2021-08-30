@@ -10,7 +10,7 @@ from utils import headers
 class Client():
 	def __init__(self, deviceId: str = "22717F5C01029F06DAED62B82F001AAB42333CD930C7936EC7B253594887BA6CE6820148ED69CBF2D0"):
 		self.api = "https://aminoapps.com/api"
-		self.headers = headers.Headers(deviceId=deviceId).headers
+		self.headers = headers.Headers().headers
 		self.deviceId = deviceId
 		self.userId = None
 		self.sid = None
@@ -37,7 +37,7 @@ class Client():
 		except:	pass
 		headers.sid = self.sid
 		headers.userId = self.userId
-		self.headers = headers.Headers(sid=self.sid, deviceId=self.deviceId).headers
+		self.headers = headers.Headers(sid=self.sid).headers
 		return request.json()
 		
 	def add_chat_message(self, ndcId, threadId, message):
