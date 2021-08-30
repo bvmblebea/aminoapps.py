@@ -1,4 +1,4 @@
-#Library created by LilZevi.
+#Library In Development created by LilZevi
 #I have not tested some functions. 
 #I tested only auth, follow_user, unfollow_user
 import requests
@@ -39,7 +39,8 @@ class Client():
 		headers.userId = self.userId
 		self.headers = headers.Headers(sid=self.sid).headers
 		return request.json()
-		
+	
+	#send_message
 	def add_chat_message(self, ndcId, threadId, message):
 		data = {
 		"ndcId": f"x{ndcId}",
@@ -53,6 +54,7 @@ class Client():
 		request = requests.post(f"{self.api}/add-chat-message", json=data, headers=self.headers)
 		return request.json()
 	
+	#comment
 	def submit_comment(self, ndcId, message, userId: str = None, blogId: str = None, wikiId: str = None):
 		data = {"content": message, "ndcId": ndcId}
 		if blogId: data["postType"] = "blog"; postId = blogId
@@ -61,17 +63,20 @@ class Client():
 		data["postId"] = postId
 		request = requests.post(f"{self.api}/submit_comment", json=data, headers=self.headers)
 		return request.json()
-		
+	
+	#join chat
 	def join_thread(self, ndcId, threadId):
 		data = {"ndcId": f"x{ndcId}", "threadId": threadId}
 		request = requests.post(f"{self.api}/join-thread", json=data, headers=self.headers)
 		return request.json()
-		
+	
+	#leave chat
 	def leave_thread(self, ndcId, threadId):
 		data = {"ndcId": f"x{ndcId}", "threadId": threadId}
 		request = requests.post(f"{self.api}/leave-thread", json=data, headers=self.headers)
 		return request.json()
-		
+	
+	#get chat users
 	def members_in_thread(self, ndcId, threadId, start: int = 0, size: int = 10):
 		data = {
 		"ndcId": f"x{ndcId}",
@@ -83,16 +88,19 @@ class Client():
 		request = requests.get(f"{self.api}/members-in-thread", json=data, headers=self.headers)
 		return request.json()
 	
+	#follow
 	def follow_user(self, ndcId, followee_id: str):
 		data = {"followee_id": followee_id, "ndcId": f"x{ndcId}"}
 		request = requests.post(f"{self.api}/follow-user", json=data, headers=self.headers)
 		return request.json()
 	
+	#unfollow
 	def unfollow_user(self, ndcId, followee_id: str):
 		data = {"followee_id": followee_id, "follower_id": headers.userId, "ndcId": f"x{ndcId}"}
 		request = requests.post(f"{self.api}/unfollow-user", json=data, headers=self.headers)
 		return request.json()
-		
+	
+	#start chat with user or users
 	def create_chat_thread(self, ndcId, message, userId: str):
 		data = {
 		"initialMessageContent": message,
@@ -103,6 +111,7 @@ class Client():
 		request = requests.post(f"{self.api}/create-chat-thread", json=data, headers=self.headers)
 		return request.json()
 	
+	#like
 	def vote(self, ndcId, blogId: str = None, wikiId: str = None):
 		data = {"ndcId": ndcId}
 		if blogId: data["logType"] = "blog"; data["postType"] = "blog"; postId = blogId
@@ -111,6 +120,7 @@ class Client():
 		request = requests.post("https://aminoapps.com/api/vote", json=data, headers=self.headers)
 		return request.json()
 	
+	#unlike
 	def unvote(self, ndcId, blogId: str = None, wikiId: str = None):
 		data = {"ndcId": ndcId}
 		if blogId: data["logType"] = "blog"; data["postType"] = "blog"; postId = blogId
