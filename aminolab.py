@@ -99,7 +99,7 @@ class Client():
 	
 	#unfollow
 	def unfollow_user(self, ndcId, followee_id: str):
-		data = {"followee_id": followee_id, "follower_id": headers.userId, "ndcId": f"x{ndcId}"}
+		data = {"followee_id": followee_id, "follower_id": self.userId, "ndcId": f"x{ndcId}"}
 		request = requests.post(f"{self.api}/unfollow-user", json=data, headers=self.headers)
 		return request.json()
 	
