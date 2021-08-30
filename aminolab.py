@@ -45,9 +45,9 @@ class Client():
 		data = {
 		"ndcId": f"x{ndcId}",
 		"threadId": threadId,
-		"content": messageType,
+		"content": message,
 		"mediaType": 0,
-		"type": 0,
+		"type": messageType,
 		"sendFailed": False,
 		"clientRefId": 0
 		}
