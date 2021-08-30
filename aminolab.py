@@ -19,7 +19,7 @@ class Client():
 		value = "".join(random.choices(string.ascii_uppercase + string.ascii_lowercase + "_-", k=462)).replace("--", "-")
 		return value
         
-    #thanks for LynxN1 for this
+    #example for auth https://github.com/LynxN1/amino_service/tree/5ae29b8115017ecf79108796eb7bb4e7f1c7a6c5 Thanks to LynxN1
 	def auth(self, email: str, password: str):
 		data = {
 		"auth_type": 0,
