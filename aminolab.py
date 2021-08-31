@@ -5,7 +5,7 @@ import requests
 import json
 import random
 import string
-from utils import headers
+from utils import headers, objects
 
 class Client():
 	def __init__(self, deviceId: str = "22717F5C01029F06DAED62B82F001AAB42333CD930C7936EC7B253594887BA6CE6820148ED69CBF2D0"):
@@ -41,6 +41,17 @@ class Client():
 		self.headers = headers.Headers(sid=self.sid).headers
 		return request.json()
 	
+	#get public chats list
+	def get_public_chat_threads(self, ndcId, start: int = 0, size: int = 10):
+		request = requests.get(f"{self.api}/chat/live-threads?ndcId=x{ndcId}&start={start}&size={size}", headers=self.headers).json()
+		return objects.chatThreads(request["result"]["threadList"]).chatThreads
+
+	#get joined chats list
+	def my_chat_threads(self, ndcId, start: int = 0, size: int = 10):
+		data = {"ndcId": f"x{ndcId}", "start": start, "size": size}
+		request = requests.post(f"{self.api}/my-chat-threads", json=data, headers=self.headers).json()
+		return objects.chatThreads(request["result"]["threadList"]).chatThreads
+		
 	#send_message
 	def send_message(self, ndcId, threadId, message: str = None, messageType: int = 0):
 		data = {
@@ -151,8 +162,13 @@ class Client():
 		elif threadId:	data["objectId"] = threadId; data["objectType"] = 12
 		request = requests.post(f"{self.api}/add-flag", json=data, headers=self.headers)
 		return request.json()
-		
-	#function post_blog():
-		
+	
+	#send_active_object. In development!
+	def send_active_object(self, ndcId):
+		data = {"ndcId": ndcId}
+		request = requests.post(f"{self.api}/community/stats/web-user-active-time", json=data, headers=self.headers)
+		return request.json()
+	
+	#get websocket url
 	def get_web_socket_url(self):
 		request = requests.get(f"{self.api}/chat/web-socket-url", headers=self.headers)
