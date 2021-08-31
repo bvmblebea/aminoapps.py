@@ -31,9 +31,8 @@ class Client():
 		elif phone:	data["phoneNumber"] = phone
 		request = requests.post(f"{self.api}/auth", json=data)
 		self.headers = request.headers
-		try:
-			self.sid = request.headers["set-cookie"]
-			self.userId = request.json()["result"]["uid"]
+		self.sid = request.headers["set-cookie"]
+		try:	self.userId = request.json()["result"]["uid"]
 		except:	print(f"Error >>", request.json()["result"]["api:message"])
 		try:	self.sid = self.sid[0: self.sid.index(";")]
 		except:	pass
