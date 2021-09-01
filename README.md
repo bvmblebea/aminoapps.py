@@ -1,5 +1,5 @@
 # AminoLab
-AminoLab Library For AminoApps using aminoapps.com/api
+AminoLab Api For AminoApps using aminoapps.com/api
 ### Example
 ```python3
 #Login
