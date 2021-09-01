@@ -1,5 +1,9 @@
 # AminoLab
 AminoLab Api For AminoApps using aminoapps.com/api
+
+### Installing
+`pip install AminoLab`
+
 ### Example
 ```python3
 #Login
