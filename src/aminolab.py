@@ -4,7 +4,7 @@ import requests
 import json
 import random
 import string
-from utils import headers, objects
+from .utils import headers, objects
 
 class Client():
 	def __init__(self, deviceId: str = "22717F5C01029F06DAED62B82F001AAB42333CD930C7936EC7B253594887BA6CE6820148ED69CBF2D0"):
@@ -68,11 +68,7 @@ class Client():
 		data = {
 		"ndcId": f"x{ndcId}",
 		"threadId": threadId,
-		"content": message,
-		"mediaType": 0,
-		"type": messageType,
-		"sendFailed": False,
-		"clientRefId": 0
+		"message": {"content": message, "mediaType": 0, "type": messageType, "sendFailed": False, "clientRefId": 0}
 		}
 		request = requests.post(f"{self.api}/add-chat-message", json=data, headers=self.headers)
 		return request.json()
@@ -129,9 +125,9 @@ class Client():
 	#start chat with user or users
 	def create_chat_thread(self, ndcId, message, userId: str):
 		data = {
-		"initialMessageContent": message,
-		"inviteeUids": [userId],
 		"ndcId": ndcId,
+		"inviteeUids": [userId],
+		"initialMessageContent": message,
 		"type": 0
 		}
 		request = requests.post(f"{self.api}/create-chat-thread", json=data, headers=self.headers)
