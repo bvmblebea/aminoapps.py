@@ -52,7 +52,6 @@ for x, name in enumerate(clients.name, 1):
 	print(f"{x}.{name}")
 ndcId = clients.ndcId[int(input("Select the community >> "))-1]
 
-client.auth
 #get public chats list
 import aminolab
 client = aminolab.Client()
