@@ -73,7 +73,7 @@ class FromLink:
 	@property
 	def FromLink(self):
 		try:	self.path = self.json["path"] 
-		except (KeyError, TypeError): 	pass
+		except (KeyError, TypeError): 	pass		
 		try:	self.objectType = self.json["extensions"]["linkInfo"]["objectType"]
 		except (KeyError, TypeError): 	pass
 		try: 	self.shortCode = self.json["extensions"]["linkInfo"]["shortCode"]
@@ -92,3 +92,36 @@ class FromLink:
 		except (KeyError, TypeError):	pass
 		
 		return self
+
+class UserInfo:
+	def __init__(self, data):
+		self.json = data
+		self.aminoId = None 
+		self.userId = None
+		self.nickname = None
+		self.content = None 
+		self.icon = None 
+		self.webURL = None
+		self.createdTime = None 
+		self.modifiedTime = None
+
+	@property
+	def UserInfo(self):
+		try:	self.aminoId = self.json["aminoId"]
+		except (KeyError, TypeError): 	pass 
+		try:	self.userId = self.json["uid"]
+		except (KeyError, TypeError): 	pass 
+		try:	self.nickname = self.json["nickname"]
+		except (KeyError, TypeError): 	pass 
+		try:	self.content = self.json["content"]
+		except (KeyError, TypeError): 	pass 
+		try:	self.icon = self.json["icon"]
+		except (KeyError, TypeError): 	pass 
+		try:	self.webURL = self.json["webURL"]
+		except (KeyError, TypeError): 	pass
+		try:	self.createdTime = self.json["createdTime"]
+		except (KeyError, TypeError): 	pass 
+		try:	self.modifiedTime = self.json["modifiedTime"]
+		except (KeyError, TypeError): 	pass 
+		
+		return self 
