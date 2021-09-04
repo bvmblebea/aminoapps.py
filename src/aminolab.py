@@ -4,7 +4,7 @@ import requests
 import json
 import random
 import string
-from .utils import headers, objects
+from utils import headers, objects
 
 class Client():
 	def __init__(self, deviceId: str = "22717F5C01029F06DAED62B82F001AAB42333CD930C7936EC7B253594887BA6CE6820148ED69CBF2D0"):
@@ -15,6 +15,7 @@ class Client():
 		self.userId = None
 		self.sid = None
 
+	#captcha generator
 	def generate_captcha(self):
 		value = "".join(random.choices(string.ascii_uppercase + string.ascii_lowercase + "_-", k=462)).replace("--", "-")
 		return value
@@ -33,7 +34,7 @@ class Client():
 		self.headers = request.headers
 		self.sid = request.headers["set-cookie"]
 		try:	self.userId = request.json()["result"]["uid"]
-		except:	print(f"Error >>", request.json()["result"]["api:message"])
+		except:	print(f"Error >>", request.json()["result"]["api:message"]); pass
 		try:	self.sid = self.sid[0: self.sid.index(";")]
 		except:	pass
 		headers.sid = self.sid
@@ -73,6 +74,11 @@ class Client():
 		request = requests.post(f"{self.api}/add-chat-message", json=data, headers=self.headers)
 		return request.json()
 	
+	#get user information
+	def get_user_info(self, userId: str):
+		request = requests.get(f"{self.api_p}/g/s/user-profile/{userId}", headers=self.headers).json()
+		return objects.UserInfo(request["userProfile"]).UserInfo
+		
 	#comment
 	def submit_comment(self, ndcId, message, userId: str = None, blogId: str = None, wikiId: str = None):
 		data = {"content": message, "ndcId": ndcId}
@@ -120,17 +126,6 @@ class Client():
 	def unfollow_user(self, ndcId, userId: str):
 		data = {"followee_id": userId, "follower_id": self.userId, "ndcId": f"x{ndcId}"}
 		request = requests.post(f"{self.api}/unfollow-user", json=data, headers=self.headers)
-		return request.json()
-	
-	#start chat with user or users
-	def create_chat_thread(self, ndcId, message, userId: str):
-		data = {
-		"ndcId": ndcId,
-		"inviteeUids": [userId],
-		"initialMessageContent": message,
-		"type": 0
-		}
-		request = requests.post(f"{self.api}/create-chat-thread", json=data, headers=self.headers)
 		return request.json()
 	
 	#like
