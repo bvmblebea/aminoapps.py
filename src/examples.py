@@ -6,7 +6,7 @@ client.auth(email="email", password="password")
 #login with phonenumber
 import AminoLab
 client = AminoLab.Client()
-client.auth(phone="phonenumber", password="password")
+client.auth(phone="phone_number", password="password")
 
 #login with email input
 import AminoLab
@@ -18,9 +18,9 @@ client.auth(email=email, password=password)
 #login with phonenumber input
 import AminoLab
 client = AminoLab.Client()
-phonenumber = input("PhoneNumber >> ")
+phone_number = input("Phone Number >> ")
 password = input("Password >> ")
-client.auth(phone=phonenumber, password=password)
+client.auth(phone=phone_number, password=password)
 
 #follow user
 import AminoLab
