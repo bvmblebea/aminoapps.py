@@ -1,5 +1,5 @@
 sid = None
-userId = None
+user_Id = None
 
 class Headers:
     def __init__(self, sid: str = None):
@@ -9,5 +9,5 @@ class Headers:
             "x-requested-with": "xmlhttprequest"
             }
        	self.headers["set-cookie"] = sid 
-       	if userId:
-            	self.userId = userId
+       	if user_Id:
+            	self.user_Id = user_Id
