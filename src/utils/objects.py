@@ -3,8 +3,8 @@ class ChatThreads:
         self.json = data
         self.title = []
         self.content = []
-        self.threadId = []
-        self.ndcId = []
+        self.thread_Id = []
+        self.ndc_Id = []
 
     @property
     def ChatThreads(self):
@@ -13,34 +13,34 @@ class ChatThreads:
         	except (KeyError, TypeError):	self.title.append(None)
         	try:	self.content.append(thread["content"])
         	except (KeyError, TypeError):	self.content.append(None)
-        	try:	self.threadId.append(thread["threadId"])
-        	except (KeyError, TypeError):	self.threadId.append(None)
-        	try:	self.ndcId.append(thread["ndcId"])
-        	except (KeyError, TypeError): self.ndcId.append(None)
+        	try:	self.thread_Id.append(thread["threadId"])
+        	except (KeyError, TypeError):	self.thread_Id.append(None)
+        	try:	self.ndc_Id.append(thread["ndcId"])
+        	except (KeyError, TypeError): self.ndc_Id.append(None)
         return self
 
 class CommunityList:
     def __init__(self, data):
         self.json = data
-        self.ndcId = []
+        self.ndc_Id = []
         self.name = []
         self.link = []
-        self.aminoId = []
+        self.amino_Id = []
 
     @property
     def CommunityList(self):
         for x in self.json:
-            self.ndcId.append(x["ndcId"])
+            self.ndc_Id.append(x["ndcId"])
             self.name.append(x["name"])
             self.link.append(x["link"])
-            self.aminoId.append(x["endpoint"])
+            self.amino_Id.append(x["endpoint"])
         return self
 
 class MembersList:
     def __init__(self, data):
         self.json = data
         self.nickname = []
-        self.userId = []
+        self.user_Id = []
         self.createdTime = []
         self.icon = []
 
@@ -49,7 +49,7 @@ class MembersList:
         for x in self.json:
         	try:	self.nickname.append(x["nickname"])
         	except (KeyError, TypeError):	pass
-        	try:	self.userId.append(x["uid"])
+        	try:	self.user_Id.append(x["uid"])
         	except (KeyError, TypeError):	pass
         	try:	self.createdTime.append(x["createdTime"])
         	except (KeyError, TypeError):	pass
@@ -61,34 +61,34 @@ class FromLink:
 	def __init__(self, data):
 		self.json = data
 		self.path = None
-		self.objectType = None 
-		self.shortCode = None 
-		self.fullPath = None 
-		self.targetCode = None 
-		self.objectId = None 
-		self.shortUrl = None 
-		self.fullUrl = None
-		self.ndcId = None
+		self.object_type = None 
+		self.short_code = None 
+		self.full_path = None 
+		self.target_code = None 
+		self.object_Id = None 
+		self.short_url = None 
+		self.full_url = None
+		self.ndc_Id = None
 	
 	@property
 	def FromLink(self):
 		try:	self.path = self.json["path"] 
 		except (KeyError, TypeError): 	pass		
-		try:	self.objectType = self.json["extensions"]["linkInfo"]["objectType"]
+		try:	self.object_type = self.json["extensions"]["linkInfo"]["objectType"]
 		except (KeyError, TypeError): 	pass
-		try: 	self.shortCode = self.json["extensions"]["linkInfo"]["shortCode"]
+		try: 	self.short_code = self.json["extensions"]["linkInfo"]["shortCode"]
 		except (KeyError, TypeError): 	pass
-		try:	self.fullPath = self.json["extensions"]["linkInfo"]["fullPath"]
+		try:	self.full_path = self.json["extensions"]["linkInfo"]["fullPath"]
 		except (KeyError, TypeError):	pass
-		try:	self.targetCode = self.json["extensions"]["linkInfo"]["targetCode"]
+		try:	self.target_code = self.json["extensions"]["linkInfo"]["targetCode"]
 		except (KeyError, TypeError):	pass
-		try: 	self.objectId = self.json["extensions"]["linkInfo"]["objectId"]
+		try: 	self.object_Id = self.json["extensions"]["linkInfo"]["objectId"]
 		except (KeyError, TypeError):	pass
-		try:	self.shortUrl = self.json["extensions"]["linkInfo"]["shareURLShortCode"]
+		try:	self.short_url = self.json["extensions"]["linkInfo"]["shareURLShortCode"]
 		except (KeyError, TypeError):	pass
-		try:	self.fullUrl = self.json["extensions"]["linkInfo"]["shareURLFullPath"]
+		try:	self.full_url = self.json["extensions"]["linkInfo"]["shareURLFullPath"]
 		except (KeyError, TypeError):	pass
-		try:	self.ndcId = self.json["extensions"]["linkInfo"]["ndcId"]
+		try:	self.ndc_Id = self.json["extensions"]["linkInfo"]["ndcId"]
 		except (KeyError, TypeError):	pass
 		
 		return self
@@ -96,20 +96,20 @@ class FromLink:
 class UserInfo:
 	def __init__(self, data):
 		self.json = data
-		self.aminoId = None 
-		self.userId = None
+		self.amino_Id = None 
+		self.user_Id = None
 		self.nickname = None
 		self.content = None 
 		self.icon = None 
-		self.webURL = None
+		self.web_URL = None
 		self.createdTime = None 
 		self.modifiedTime = None
 
 	@property
 	def UserInfo(self):
-		try:	self.aminoId = self.json["aminoId"]
+		try:	self.amino_Id = self.json["aminoId"]
 		except (KeyError, TypeError): 	pass 
-		try:	self.userId = self.json["uid"]
+		try:	self.user_Id = self.json["uid"]
 		except (KeyError, TypeError): 	pass 
 		try:	self.nickname = self.json["nickname"]
 		except (KeyError, TypeError): 	pass 
@@ -117,7 +117,7 @@ class UserInfo:
 		except (KeyError, TypeError): 	pass 
 		try:	self.icon = self.json["icon"]
 		except (KeyError, TypeError): 	pass 
-		try:	self.webURL = self.json["webURL"]
+		try:	self.web_URL = self.json["webURL"]
 		except (KeyError, TypeError): 	pass
 		try:	self.createdTime = self.json["createdTime"]
 		except (KeyError, TypeError): 	pass 
