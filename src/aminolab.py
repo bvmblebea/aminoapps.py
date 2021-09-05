@@ -82,9 +82,9 @@ class Client():
 	#comment
 	def submit_comment(self, ndc_Id, message, user_Id: str = None, blog_Id: str = None, wiki_Id: str = None):
 		data = {"content": message, "ndcId": ndc_Id}
-		if blogId: data["postType"] = "blog"; post_Id = blog_Id
-		if wikiId: data["postType"] = "wiki"; post_Id = wiki_Id
-		if userId: data["postType"] = "user"; post_Id = user_Id
+		if blog_Id: data["postType"] = "blog"; post_Id = blog_Id
+		if wiki_Id: data["postType"] = "wiki"; post_Id = wiki_Id
+		if user_Id: data["postType"] = "user"; post_Id = user_Id
 		data["postId"] = post_Id
 		request = requests.post(f"{self.api}/submit_comment", json=data, headers=self.headers)
 		return request.json()
@@ -138,8 +138,8 @@ class Client():
 	#like
 	def vote(self, ndc_Id, blog_Id: str = None, wiki_Id: str = None):
 		data = {"ndcId": ndc_Id}
-		if blogId: data["logType"] = "blog"; data["postType"] = "blog"; post_Id = blog_Id
-		elif wikiId: data["logType"] = "wiki"; data["postType"] = "wiki"; post_Id = wiki_Id
+		if blog_Id: data["logType"] = "blog"; data["postType"] = "blog"; post_Id = blog_Id
+		elif wiki_Id: data["logType"] = "wiki"; data["postType"] = "wiki"; post_Id = wiki_Id
 		data["postId"] = post_Id
 		request = requests.post(f"{self.api}/vote", json=data, headers=self.headers)
 		return request.json()
@@ -147,8 +147,8 @@ class Client():
 	#unlike
 	def unvote(self, ndc_Id, blog_Id: str = None, wiki_Id: str = None):
 		data = {"ndcId": ndc_Id}
-		if blogId: data["logType"] = "blog"; data["postType"] = "blog"; post_Id = blog_Id
-		elif wikiId: data["logType"] = "wiki"; data["postType"] = "wiki"; post_Id = wiki_Id
+		if blog_Id: data["logType"] = "blog"; data["postType"] = "blog"; post_Id = blog_Id
+		elif wiki_Id: data["logType"] = "wiki"; data["postType"] = "wiki"; post_Id = wiki_Id
 		data["postId"] = post_Id
 		request = requests.post(f"{self.api}/unvote", json=data, headers=self.headers)
 		return request.json()
