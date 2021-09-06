@@ -81,7 +81,7 @@ class Client():
 		
 	#comment
 	def submit_comment(self, ndc_Id, message, user_Id: str = None, blog_Id: str = None, wiki_Id: str = None):
-		data = {"content": message, "ndcId": ndc_Id}
+		data = {"ndcId": ndc_Id, "content": message}
 		if blog_Id: data["postType"] = "blog"; post_Id = blog_Id
 		if wiki_Id: data["postType"] = "wiki"; post_Id = wiki_Id
 		if user_Id: data["postType"] = "user"; post_Id = user_Id
@@ -203,13 +203,29 @@ class Client():
 		return request.json()
 	
 	#foulsc code - start chat with user or users 
-	def create_chat_thread(self, ndc_Id, user_Id: str, message: str, title: str = None, nvite_type: int = 0):
+	def create_chat_thread(self, ndc_Id, user_Id: str, message: str, title: str = None, type: int = 0):
 		data = { 
 		"ndcId": ndc_Id,
 		"inviteeUids": user_Id,
 		"initialMessageContent": message,
-		"type": invite_type
+		"type": type
 		}
 		if title:	data["title"] = title
 		request = requests.post(f"{self.api}/create-chat-thread", json=data, headers=self.headers)
+		return request.json()
+	
+	#thread check, useless function
+	def thread_check(self, ndc_Id):
+		data = {"ndcId": f"x{ndc_Id}"}
+		request = requests.post(f"{self.api}/thread-check", json=data, headers=self.headers)
+		return request.json()
+	
+	#link translation
+	def link_translation(self, ndc_Id, user_Id: str = None, blog_Id: str = None, wiki_Id: str = None, thread_Id: str = None):
+		data = {"ndcId": f"x{ndc_Id}"}
+		if user_Id:	data["objectId"] = user_Id; data["objectType"] = 0 
+		elif blog_Id:	data["objectId"] = blog_Id; data["objectType"] = 1
+		elif wiki_Id:	data["objectId"] = wiki_Id; data["objectType"] = 2
+		elif thread_Id:	data["objectId"] = thread_Id; data["objectType"] = 12
+		request = requests.post(f"{self.api}/link-translation", json=data, headers=self.headers)
 		return request.json()
