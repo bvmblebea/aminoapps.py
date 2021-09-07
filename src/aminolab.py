@@ -45,7 +45,7 @@ class Client():
 	#logout
 	def logout(self):
 		self.headers = {"cookie": f"sid={self.sid.replace('sid=', '')}; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Path=/"}
-		request = requests.post("{self.api}/logout", headers=self.headers)
+		request = requests.post(f"{self.api}/logout", headers=self.headers)
 		self.sid = None
 		self.user_Id = None
 		request.headers["cookie"] = request.headers["set-cookie"]
