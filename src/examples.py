@@ -39,33 +39,29 @@ import AminoLab
 client = AminoLab.Client()
 client.auth(email="email", password="password")
 clients = client.get_public_communities(language="en", size=100)
-for x, name in enumerate(clients.name, 1):
-	print(f"{x}.{name}")
-ndc_Id = clients.ndc_Id[int(input("Select the community >> "))-1]
-
+for name, ndc_Id in zip(clients.name, clients.ndc_Id):
+	print(f"{name} >> {ndc_Id}")
+	
 #get joined communities list
 import AminoLab
 client = AminoLab.Client()
 client.auth(email="email", password="password")
 clients = client.my_communities()
-for x, name in enumerate(clients.name, 1):
-	print(f"{x}.{name}")
-ndc_Id = clients.ndc_Id[int(input("Select the community >> "))-1]
+for name, ndc_Id in zip(clients.name, clients.ndc_Id):
+	print(f"{name} >> {ndc_Id}")
 
 #get public chats list
 import AminoLab
 client = AminoLab.Client()
 client.auth(email="email", password="password")
 chats = client.get_public_chat_threads(ndc_Id="ndc_Id", size="size")
-for z, title in enumerate(chats.title, 1):
-	print(f"{z}.{title}")
-thread_Id = chats.thread_Id[int(input("Select The Chat >> "))-1]
+for title, thread_Id in zip(chats.title, chats.thread_Id):
+	print(f"{title} >> {thread_Id}")
 
 #get joined chats list
 import AminoLab
 client = AminoLab.Client()
 client.auth(email="email", password="password")
 chats = client.my_chat_threads(ndc_Id="ndc_Id", size="size")
-for z, title in enumerate(chats.title, 1):
-	print(f"{z}.{title}")
-thread_Id = chats.thread_Id[int(input("Select The Chat >> "))-1]
+for title, thread_Id in zip(chats.title, chats.thread_Id):
+	print(f"{title} >> {thread_Id}")
