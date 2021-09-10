@@ -34,6 +34,7 @@ class Client():
 		self.headers = request.headers
 		self.sid = request.headers["set-cookie"]
 		try:	self.user_Id = request.json()["result"]["uid"]
+		except (KeyError, TypeError):	print("Error")
 		except:	print(f"Error >>", request.json()["result"]["api:message"]); pass
 		try:	self.sid = self.sid[0: self.sid.index(";")]
 		except:	pass
@@ -89,6 +90,11 @@ class Client():
 		request = requests.post(f"{self.api}/submit_comment", json=data, headers=self.headers)
 		return request.json()
 	
+	#get supported languages list
+	def get_supported_languages(self):
+		request = requests.get(f"{self.api_p}/g/s/community-collection/supported-languages", headers=self.headers)
+		return request.json()
+		
 	#update account
 	def update_account(self, nickname: str = None):
 		data = {}
@@ -109,10 +115,30 @@ class Client():
 		return request.json()
 	
 	#get online users
-	def get_online_members(self, ndc_Id: str):
-		request = requests.get(f"{self.api}/x{ndc_Id}/online-members", headers=self.headers).json()
-		return objects.MembersList(request["result"]["onlineMembersList"]).MembersList
+	def get_online_members(self, ndc_Id: str, start: int = 0, size: int = 10):
+		request = requests.get(f"{self.api_p}/x{ndc_Id}/s/live-layer?topic=ndtopic:x{ndc_Id}:online-members&start={start}&size={size}", headers=self.headers).json()
+		return objects.MembersList(request["userProfileList"]).MembersList
 	
+	#get recent users
+	def get_recent_members(self, ndc_Id: str, start: int = 0, size: int = 10):
+		request = requests.get(f"{self.api_p}/x{ndc_Id}/s/user-profile?type=recent&start={start}&size={size}", headers=self.headers).json()
+		return objects.MembersList(request["userProfileList"]).MembersList
+
+	#get banned users
+	def get_banned_membera(self, ndc_Id: str, start: int = 0, size: int = 10):
+		request = requests.get(f"{self.api_p}/x{ndc_Id}/s/user-profile?type=banned&start={start}&size={size}", headers=self.headers).json()
+		return objects.MembersList(request["userProfileList"]).MembersList
+
+	#get community curators
+	def get_curators_list(self, ndc_Id: str):
+		request = requests.get(f"{self.api_p}/x{ndc_Id}/s/user-profile?type=curators", headers=self.headers).json()
+		return objects.MembersList(request["userProfileList"]).MembersList
+	
+	#get community leaders
+	def get_leaders_list(self, ndc_Id: str):
+		request = requests.get(f"{self.api_p}/x{ndc_Id}/s/user-profile?type=leaders", headers=self.headers).json()
+		return objects.MembersList(request["userProfileList"]).MembersList
+
 	#get public communities list, languages - ru = Russia, en = English
 	def get_public_communities(self, language: str, size: int = 25):
 		request = requests.get(f"{self.api_p}/g/s/topic/0/feed/community?language={language}&type=web-explore&categoryKey=recommendation&size={size}&pagingType=t", headers=self.headers).json()
@@ -153,6 +179,11 @@ class Client():
 		request = requests.post(f"{self.api}/unvote", json=data, headers=self.headers)
 		return request.json()
 	
+	#get community blogs list
+	def get_recent_blogs(self, ndc_Id: str, start: int = 0, size: int = 10):
+		request = requests.get(f"{self.api_p}/x{ndc_Id}/s/feed/blog-all?pagingType=t&start={start}&size={size}", headers=self.headers).json()
+		return objects.BlogsList(request["blogList"]).BlogsList
+		
 	#join community
 	def join_community(self, ndc_Id: str):
 		data = {"ndcId": ndc_Id}
@@ -198,7 +229,7 @@ class Client():
 		return objects.FromLink(request["linkInfoV2"]).FromLink
 
 	#get blocked and blocker full list
-	def get_block_full_list(self):
+	def block_full_list(self):
 		request = requests.get(f"{self.api}/block/full-list", headers=self.headers)
 		return request.json()
 	
@@ -219,7 +250,7 @@ class Client():
 		data = {"ndcId": f"x{ndc_Id}"}
 		request = requests.post(f"{self.api}/thread-check", json=data, headers=self.headers)
 		return request.json()
-	
+
 	#link translation
 	def link_translation(self, ndc_Id, user_Id: str = None, blog_Id: str = None, wiki_Id: str = None, thread_Id: str = None):
 		data = {"ndcId": f"x{ndc_Id}"}
@@ -228,4 +259,44 @@ class Client():
 		elif wiki_Id:	data["objectId"] = wiki_Id; data["objectType"] = 2
 		elif thread_Id:	data["objectId"] = thread_Id; data["objectType"] = 12
 		request = requests.post(f"{self.api}/link-translation", json=data, headers=self.headers)
+		return request.json()
+
+	#get chat bubbles list
+	def get_bubbles_list(self):
+		request = requests.get(f"{self.api_p}/g/s/chat/chat-bubble", headers=self.headers)
+		return request.json()
+	
+	#get chat bubbles templates list
+	def get_bubbles_templates_list(self):
+		request = requests.get(f"{self.api_p}/g/s/chat/chat-bubble/templates", headers=self.headers)
+		return request.json()
+		
+	#get avatar frames list
+	def get_avatar_frames_list(self, start: int = 0, size: int = 10):
+		request = requests.get(f"{self.api_p}/g/s/avatar-frame?start={start}&size={size}", headers=self.headers)
+		return request.json()
+	
+	#apply avatar frame
+	def apply_avatar_frame(self, ndc_Id, frame_Id: str, apply_to_all: int = 0):
+		data = {"frameId": frame_Id, "applyToAll": apply_to_all}
+		request = requests.post(f"{self.api_p}/x{ndc_Id}/s/avatar-frame/apply", json=data, headers=self.headers)
+		return request.json()
+		
+	#edit profile
+	def edit_profile(self, ndc_Id, nickname: str = None, content: str = None, background_color: str = None):
+		data = {}
+		if nickname:	data["nickname"] = nickname 
+		if content:	data["content"] = content 
+		if background_color:	data["extensions"] = {"style": {"backgroundColor": background_color}}
+		request = requests.post(f"{self.api_p}/x{ndc_Id}/s/user-profile/{self.user_Id}", json=data, headers=self.headers)
+		return request.json()
+		
+	#delete chat
+	def delete_thread(self, ndc_Id, thread_Id: str):
+		request = requests.delete(f"{self.api_p}/x{ndc_Id}/s/chat/thread/{thread_Id}", headers=self.headers)
+		return request.json()
+	
+	#get wallet coin history info
+	def wallet_coin_history(self, start: int = 0, size: int = 10):
+		request = requests.get(f"{self.api_p}/g/s/wallet/coin/history?start={start}&size={size}", headers=self.headers)
 		return request.json()
