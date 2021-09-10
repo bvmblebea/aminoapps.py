@@ -17,6 +17,7 @@ class ChatThreads:
         	except (KeyError, TypeError):	self.thread_Id.append(None)
         	try:	self.ndc_Id.append(thread["ndcId"])
         	except (KeyError, TypeError): self.ndc_Id.append(None)
+        
         return self
 
 class CommunityList:
@@ -34,6 +35,7 @@ class CommunityList:
             self.name.append(x["name"])
             self.link.append(x["link"])
             self.amino_Id.append(x["endpoint"])
+            
         return self
 
 class MembersList:
@@ -55,6 +57,7 @@ class MembersList:
         	except (KeyError, TypeError):	pass
         	try:	self.icon.append(x["icon"])
         	except (KeyError, TypeError):	pass
+
         return self
 
 class FromLink:
@@ -125,3 +128,31 @@ class UserInfo:
 		except (KeyError, TypeError): 	pass 
 		
 		return self 
+		
+class BlogsList:
+	def __init__(self, data):
+		self.json = data
+		self.blog_Id = []
+		self.title = []
+		self.content = []
+		self.comments_count = []
+		self.createdTime = []
+		self.modifiedTime = []
+		
+	@property
+	def BlogsList(self):
+		for blog in self.json:
+			try:	self.blog_Id.append(blog["blogId"])
+			except (KeyError, TypeError):	pass
+			try:	self.title.append(blog["title"])
+			except (KeyError, TypeError):	pass
+			try:	self.content.append(blog["content"])
+			except (KeyError, TypeError):	pass
+			try:	self.comments_count.append(blog["commentsCount"])
+			except (KeyError, TypeError):	pass
+			try:	self.createdTime.append(blog["createdTime"])
+			except (KeyError, TypeError):	pass
+			try:	self.modifiedTime.append(blog["modifiedTime"])
+			except (KeyError, TypeError):	pass
+
+		return self
