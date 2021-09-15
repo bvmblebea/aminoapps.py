@@ -4,7 +4,7 @@ import requests
 import json
 import random
 import string
-from .utils import headers, objects
+from utils import headers, objects
 
 
 class Client():
