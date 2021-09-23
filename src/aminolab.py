@@ -4,7 +4,7 @@ import requests
 import json
 import random
 import string
-from utils import headers, objects
+from utils import headers, objects, CheckExceptions
 
 
 class Client():
@@ -46,24 +46,19 @@ class Client():
             data["phoneNumber"] = phone
         request = requests.post(f"{self.api}/auth", json=data)
         try:
-        	self.headers = request.headers
-        	self.sid = request.headers["set-cookie"]
-        	self.user_Id = request.json()["result"]["uid"]
-        except (KeyError, TypeError):
-        	response = json.loads(request.text)
-        	print("Error >> ", response["result"]["api:message"])
-        except BaseException:
-            response = json.loads(request.text)
-        	print("Error >>", response["result"]["api:message"]) 
-        	pass
-        try:
-        	self.sid = self.sid[0: self.sid.index(";")]
-        except BaseException:
-           return
-        headers.sid = self.sid
-        headers.user_Id = self.user_Id
-        self.headers = headers.Headers(sid=self.sid).headers
-        return request.json()
+            self.headers = request.headers
+            self.sid = request.headers["set-cookie"]
+            try:
+                self.sid = self.sid[0: self.sid.index(";")]
+            except BaseException:
+                return
+            self.user_Id = request.json()["result"]["uid"]
+            headers.sid = self.sid
+            headers.user_Id = self.user_Id
+            self.headers = headers.Headers(sid=self.sid).headers
+            return request.json()
+        except:
+            return CheckExceptions(request.json())
 
     # logout
     def logout(self):
