@@ -45,19 +45,20 @@ class Client():
         elif phone:
             data["phoneNumber"] = phone
         request = requests.post(f"{self.api}/auth", json=data)
-        self.headers = request.headers
-        self.sid = request.headers["set-cookie"]
         try:
-            self.user_Id = request.json()["result"]["uid"]
+        	self.headers = request.headers
+        	self.sid = request.headers["set-cookie"]
+        	self.user_Id = request.json()["result"]["uid"]
         except (KeyError, TypeError):
-            print("Error")
+        	response = json.loads(request.text)
+        	print("Error >> ", response["result"]["api:message"])
         except BaseException:
-            print(f"Error >>", request.json()["result"]["api:message"])
-            pass
+        	print("Error >>", request.json()["result"]["api:message"]) 
+        	pass
         try:
-            self.sid = self.sid[0: self.sid.index(";")]
+        	self.sid = self.sid[0: self.sid.index(";")]
         except BaseException:
-            pass
+           return
         headers.sid = self.sid
         headers.user_Id = self.user_Id
         self.headers = headers.Headers(sid=self.sid).headers
@@ -76,11 +77,11 @@ class Client():
         return request.json()
 
     # get public chats list
-    def get_public_chat_threads(self, ndc_Id, start: int = 0, size: int = 10):
+    def get_public_chat_threads(self, ndc_Id, type: str = "recommended", start: int = 0, size: int = 10):
         request = requests.get(
-            f"{self.api}/chat/live-threads?ndcId=x{ndc_Id}&start={start}&size={size}",
+            f"{self.api_p}/x{ndc_Id}/s/chat/thread?type=public-all&filterType={type}&start={start}&size={size}",
             headers=self.headers).json()
-        return objects.ChatThreads(request["result"]["threadList"]).ChatThreads
+        return objects.ChatThreads(request["threadList"]).ChatThreads
 
     # get joined chats list
     def my_chat_threads(self, ndc_Id, start: int = 0, size: int = 10):
@@ -678,12 +679,5 @@ class Client():
     def get_thread_messages(self, ndc_Id: str, thread_Id: str, size: int = 10):
         request = requests.get(
             f"{self.api_p}/x{ndc_Id}/s/chat/thread/{thread_Id}/message?v=2&pagingType=t&size={size}",
-            headers=self.headers)
-        return request.json()
-
-    # delete chat message
-    def delete_message(self, ndc_Id: str, thread_Id: str, message_Id: str):
-        request = requests.delete(
-            f"{self.api_p}/x{ndc_Id}/s/chat/thread/{thread_Id}/message/{message_Id}",
             headers=self.headers)
         return request.json()
