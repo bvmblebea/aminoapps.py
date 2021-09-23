@@ -53,7 +53,8 @@ class Client():
         	response = json.loads(request.text)
         	print("Error >> ", response["result"]["api:message"])
         except BaseException:
-        	print("Error >>", request.json()["result"]["api:message"]) 
+            response = json.loads(request.text)
+        	print("Error >>", response["result"]["api:message"]) 
         	pass
         try:
         	self.sid = self.sid[0: self.sid.index(";")]
