@@ -7,7 +7,7 @@ import time
 import base64
 import random
 import string
-from .utils import headers, objects, exception
+from utils import headers, objects, exception
 
 
 class Client():
