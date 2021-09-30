@@ -1,10 +1,13 @@
 # Library In Development created by LilZevi
 # I have not tested some functions.
+import websocket
 import requests
 import json
+import time
+import base64
 import random
 import string
-from utils import headers, objects, CheckExceptions
+from utils import headers, objects, exception
 
 
 class Client():
@@ -29,6 +32,24 @@ class Client():
             "--",
             "-")
         return value
+
+    # auth with sid
+    def auth_sid(self, sid: str, user_Id: str = None):
+        try:
+            value = str(base64.b64decode(sid.replace("sid=", "")))
+            value_index = value.index("{")
+            value_index_two = value.index("}")
+            value = value[value_index: value_index_two + 1]
+            data = json.loads(value)
+            self.user_Id = data["2"]
+        except BaseException:
+            self.user_Id = user_Id
+        self.sid = f"sid={sid}"
+        headers.sid = self.sid
+        if self.user_Id:
+            headers.user_Id = self.user_Id
+        else:
+            headers.user_Id = None
 
     # example for auth
     # https://github.com/LynxN1/amino_service/tree/5ae29b8115017ecf79108796eb7bb4e7f1c7a6c5
@@ -57,8 +78,8 @@ class Client():
             headers.user_Id = self.user_Id
             self.headers = headers.Headers(sid=self.sid).headers
             return request.json()
-        except:
-            return CheckExceptions(request.json())
+        except BaseException:
+            return exception.CheckExceptions(request.json())
 
     # logout
     def logout(self):
@@ -73,11 +94,11 @@ class Client():
         return request.json()
 
     # get public chats list
-    def get_public_chat_threads(self, ndc_Id, type: str = "recommended", start: int = 0, size: int = 10):
+    def get_public_chat_threads(self, ndc_Id, start: int = 0, size: int = 10):
         request = requests.get(
-            f"{self.api_p}/x{ndc_Id}/s/chat/thread?type=public-all&filterType={type}&start={start}&size={size}",
+            f"{self.api}/chat/live-threads?ndcId=x{ndc_Id}&start={start}&size={size}",
             headers=self.headers).json()
-        return objects.ChatThreads(request["threadList"]).ChatThreads
+        return objects.ChatThreads(request["result"]["threadList"]).ChatThreads
 
     # get joined chats list
     def my_chat_threads(self, ndc_Id, start: int = 0, size: int = 10):
@@ -102,6 +123,25 @@ class Client():
                 "content": message,
                 "mediaType": 0,
                 "type": message_type,
+                "sendFailed": False,
+                "clientRefId": 0}}
+        request = requests.post(
+            f"{self.api}/add-chat-message",
+            json=data,
+            headers=self.headers)
+        return request.json()
+
+    # send_image. don't tested
+    def send_Image(self, ndc_Id, thread_Id, image_link: str):
+        data = {
+            "ndcId": f"x{ndc_Id}",
+            "threadId": thread_Id,
+            "message": {
+                "content": None,
+                "mediaType": 100,
+                "mediaValue": image_link,
+                "type": 0,
+                "uploadId": 0,
                 "sendFailed": False,
                 "clientRefId": 0}}
         request = requests.post(
@@ -193,7 +233,7 @@ class Client():
         return objects.MembersList(request["userProfileList"]).MembersList
 
     # get banned users
-    def get_banned_membera(self, ndc_Id: str, start: int = 0, size: int = 10):
+    def get_banned_members(self, ndc_Id: str, start: int = 0, size: int = 10):
         request = requests.get(
             f"{self.api_p}/x{ndc_Id}/s/user-profile?type=banned&start={start}&size={size}",
             headers=self.headers).json()
@@ -481,12 +521,15 @@ class Client():
             ndc_Id,
             nickname: str = None,
             content: str = None,
+            icon: str = None,
             background_color: str = None):
         data = {}
         if nickname:
             data["nickname"] = nickname
         if content:
             data["content"] = content
+        if icon:
+            data["icon"] = icon
         if background_color:
             data["extensions"] = {
                 "style": {
@@ -676,4 +719,126 @@ class Client():
         request = requests.get(
             f"{self.api_p}/x{ndc_Id}/s/chat/thread/{thread_Id}/message?v=2&pagingType=t&size={size}",
             headers=self.headers)
+        return request.json()
+
+    # set activity status
+    # 1 - online, 2 - offline
+    def set_activity_status(self, ndc_Id: str, status: int = 1):
+        data = {"onlineStatus": status, "duration": 86400}
+        request = requests.post(
+            f"{self.api_p}/x{ndc_Id}/s/user-profile/{self.user_Id}/online-status",
+            json=data,
+            headers=self.headers)
+        return request.json()
+
+    # invite user or users to chat
+    def invite_to_thread(self, ndc_Id: str, thread_Id: str, user_Id: str):
+        data = {"uids": user_Id}
+        request = requests.post(
+            f"{self.api_p}/x{ndc_Id}/s/chat/thread/{thread_Id}/member/invite",
+            json=data,
+            headers=self.headers)
+        return request.json()
+
+    # invite user or users to voice
+    def invite_to_vc(self, ndc_Id: str, thread_Id: str, user_Id: str):
+        data = {"uid": user_Id}
+        request = requests.post(
+            f"{self.api_p}/x{ndc_Id}/s/chat/thread/{thread_Id}/vvchat-presenter/invite",
+            json=data,
+            headers=self.headers)
+        return request.json()
+
+    # send coins to blog, chat, or object
+    def send_coins(
+            self,
+            ndc_Id: str,
+            coins: int,
+            blog_Id: str = None,
+            thread_Id: str = None,
+            object_Id: str = None,
+            transaction_Id: str = None):
+        link = None
+        if transaction_Id is None:
+            transaction_Id = str(uuid4())
+        data = {
+            "coins": coins,
+            "tippingContext": {
+                "transactionId": transaction_Id}}
+        if blog_Id is not None:
+            link = f"{self.api_p}/x{ndc_Id}/s/blog/{blog_Id}/tipping"
+        if thread_Id is not None:
+            link = f"{self.api_p}/x{ndc_Id}/s/chat/thread/{thread_Id}/tipping"
+        if object_Id is not None:
+            data["objectId"] = object_Id
+            data["objectType"] = 2
+            link = f"{self.api_p}/x{ndc_Id}/s/tipping"
+        if link is None:
+            print("Dumbass you didn't fill out the link in send_coins")
+        request = requests.post(link, json=data, headers=self.headers)
+        return request.json()
+
+    # invite user or users by host
+    def invite_by_host(self, ndc_Id: str, thread_Id: str, user_Id: str):
+        data = {"uidList": user_Id}
+        request = requests.post(
+            f"{self.api_p}/x{ndc_Id}/s/chat/thread/{thread_Id}/avchat-members",
+            json=data,
+            headers=self.headers)
+        return request.json()
+
+    # watch ad and get 2-3 coins.
+    def watch_ad(self):
+        request = requests.post(
+            f"{self.api_p}/g/s/wallet/ads/video/start",
+            headers=self.headers)
+        return request.json()
+
+    # get thread(chat)
+    def get_thread(self, ndc_Id: str, thread_Id: str):
+        request = requests.get(
+            f"{self.api_p}/x{ndc_Id}/s/chat/thread/{thread_Id}",
+            headers=self.headers)
+        return request.json()
+
+    # check in
+    def check_In(self, ndc_Id: str, time_zone: int = -
+                 int(time.timezone) // 1000):
+        data = {"timezone": time_zone}
+        request = requests.post(
+            f"{self.api_p}/x{ndc_Id}/s/check-in",
+            json=data,
+            headers=self.headers)
+        return request.json()
+
+    # claim new user coupon
+    def claim_new_user_coupon(self):
+        request = requests.post(
+            f"{self.api_p}/g/s/coupon/new-user-coupon/claim",
+            headers=self.headers)
+        return request.json()
+
+    # get blog votes
+    def get_blog_votes(self, ndc_Id: str, blog_Id: str):
+        request = requests.get(
+            f"{self.api}/x{ndc_Id}/blog/{blog_Id}/votes",
+            headers=self.headers)
+        return request.json()
+
+    # poll option
+    def poll_option(self, ndc_Id: str, blog_Id: str, option_Id: str):
+        request = requests.post(
+            f"{self.api}/poll-option/x{ndc_Id}/{blog_Id}/{option_Id}/vote",
+            headers=self.headers)
+        return request.json()
+
+    # search community
+    def search_community(self, title: str, start: int = 0, size: int = 10):
+        data = {"q": title, "start": start, "size": size}
+        request = requests.post(
+            f"{self.api_p}/g/s/community/search?q={title}&start={start}&size={size}",
+            json=data,
+            headers=self.headers)
+        return request.json()
+
         return request.json()
