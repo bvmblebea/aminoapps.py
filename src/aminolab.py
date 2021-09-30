@@ -840,5 +840,3 @@ class Client():
             json=data,
             headers=self.headers)
         return request.json()
-
-        return request.json()
