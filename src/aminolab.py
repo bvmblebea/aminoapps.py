@@ -1,6 +1,5 @@
 # Library In Development created by LilZevi
 # I have not tested some functions.
-import websocket
 import requests
 import json
 import time
