@@ -731,62 +731,6 @@ class Client():
             headers=self.headers)
         return request.json()
 
-    # invite user or users to chat
-    def invite_to_thread(self, ndc_Id: str, thread_Id: str, user_Id: str):
-        data = {"uids": user_Id}
-        request = requests.post(
-            f"{self.api_p}/x{ndc_Id}/s/chat/thread/{thread_Id}/member/invite",
-            json=data,
-            headers=self.headers)
-        return request.json()
-
-    # invite user or users to voice
-    def invite_to_vc(self, ndc_Id: str, thread_Id: str, user_Id: str):
-        data = {"uid": user_Id}
-        request = requests.post(
-            f"{self.api_p}/x{ndc_Id}/s/chat/thread/{thread_Id}/vvchat-presenter/invite",
-            json=data,
-            headers=self.headers)
-        return request.json()
-
-    # send coins to blog, chat, or object
-    def send_coins(
-            self,
-            ndc_Id: str,
-            coins: int,
-            blog_Id: str = None,
-            thread_Id: str = None,
-            object_Id: str = None,
-            transaction_Id: str = None):
-        link = None
-        if transaction_Id is None:
-            transaction_Id = str(uuid4())
-        data = {
-            "coins": coins,
-            "tippingContext": {
-                "transactionId": transaction_Id}}
-        if blog_Id is not None:
-            link = f"{self.api_p}/x{ndc_Id}/s/blog/{blog_Id}/tipping"
-        if thread_Id is not None:
-            link = f"{self.api_p}/x{ndc_Id}/s/chat/thread/{thread_Id}/tipping"
-        if object_Id is not None:
-            data["objectId"] = object_Id
-            data["objectType"] = 2
-            link = f"{self.api_p}/x{ndc_Id}/s/tipping"
-        if link is None:
-            print("Dumbass you didn't fill out the link in send_coins")
-        request = requests.post(link, json=data, headers=self.headers)
-        return request.json()
-
-    # invite user or users by host
-    def invite_by_host(self, ndc_Id: str, thread_Id: str, user_Id: str):
-        data = {"uidList": user_Id}
-        request = requests.post(
-            f"{self.api_p}/x{ndc_Id}/s/chat/thread/{thread_Id}/avchat-members",
-            json=data,
-            headers=self.headers)
-        return request.json()
-
     # watch ad and get 2-3 coins.
     def watch_ad(self):
         request = requests.post(
@@ -798,23 +742,6 @@ class Client():
     def get_thread(self, ndc_Id: str, thread_Id: str):
         request = requests.get(
             f"{self.api_p}/x{ndc_Id}/s/chat/thread/{thread_Id}",
-            headers=self.headers)
-        return request.json()
-
-    # check in
-    def check_In(self, ndc_Id: str, time_zone: int = -
-                 int(time.timezone) // 1000):
-        data = {"timezone": time_zone}
-        request = requests.post(
-            f"{self.api_p}/x{ndc_Id}/s/check-in",
-            json=data,
-            headers=self.headers)
-        return request.json()
-
-    # claim new user coupon
-    def claim_new_user_coupon(self):
-        request = requests.post(
-            f"{self.api_p}/g/s/coupon/new-user-coupon/claim",
             headers=self.headers)
         return request.json()
 
