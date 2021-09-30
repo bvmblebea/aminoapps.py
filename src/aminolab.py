@@ -7,7 +7,7 @@ import time
 import base64
 import random
 import string
-from utils import headers, objects, exception
+from .utils import headers, objects, exception
 
 
 class Client():
@@ -94,11 +94,11 @@ class Client():
         return request.json()
 
     # get public chats list
-    def get_public_chat_threads(self, ndc_Id, start: int = 0, size: int = 10):
+    def get_public_chat_threads(self, ndc_Id, type: str = "recommended", start: int = 0, size: int = 10):
         request = requests.get(
-            f"{self.api}/chat/live-threads?ndcId=x{ndc_Id}&start={start}&size={size}",
+            f"{self.api_p}/x{ndc_Id}/s/chat/thread?type=public-all&filterType={type}&start={start}&size={size}",
             headers=self.headers).json()
-        return objects.ChatThreads(request["result"]["threadList"]).ChatThreads
+        return objects.ChatThreads(request["threadList"]).ChatThreads
 
     # get joined chats list
     def my_chat_threads(self, ndc_Id, start: int = 0, size: int = 10):
