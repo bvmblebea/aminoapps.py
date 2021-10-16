@@ -12,10 +12,11 @@ from utils import headers, objects, exception
 class Client():
     def __init__(
             self,
-            device_Id: str = "22717F5C01029F06DAED62B82F001AAB42333CD930C7936EC7B253594887BA6CE6820148ED69CBF2D0"):
+            device_Id: str = "17cb6a3050ecedecb1e8cf6187284a46a8b59e6aa75b0ed6cf75e9b6f1a27f32cb85b125050162da1f"):
         self.api = "https://aminoapps.com/api"
         self.api_p = "https://aminoapps.com/api-p"
         self.headers = headers.Headers().headers
+        self.headers_v2 = headers.Headers().headers_v2
         self.device_Id = device_Id
         self.user_Id = None
         self.sid = None
@@ -75,7 +76,8 @@ class Client():
             self.user_Id = request.json()["result"]["uid"]
             headers.sid = self.sid
             headers.user_Id = self.user_Id
-            self.headers = headers.Headers(sid=self.sid).headers
+            self.headers = headers.Headers(
+                device_Id=self.device_Id, sid=self.sid).headers
             return request.json()
         except BaseException:
             return exception.CheckExceptions(request.json())
@@ -720,6 +722,19 @@ class Client():
             headers=self.headers)
         return request.json()
 
+    # get chat messages v2
+    def chat_thread_messages(
+            self,
+            ndc_Id: str,
+            thread_Id: str,
+            size: int = 10):
+        data = {"ndcId": f"x{ndc_Id}", "threadId": thread_Id, "size": size}
+        request = requests.post(
+            f"{self.api}/chat-thread-messages",
+            json=data,
+            headers=self.headers)
+        return request.json()
+
     # set activity status
     # 1 - online, 2 - offline
     def set_activity_status(self, ndc_Id: str, status: int = 1):
@@ -744,6 +759,23 @@ class Client():
             headers=self.headers)
         return request.json()
 
+    # check in
+    def check_In(self, ndc_Id: str, time_zone: int = -
+                 int(time.timezone) // 1000):
+        data = {"timezone": time_zone}
+        request = requests.post(
+            f"{self.api_p}/x{ndc_Id}/s/check-in",
+            json=data,
+            headers=self.headers)
+        return request.json()
+
+    # claim new user coupon
+    def claim_new_user_coupon(self):
+        request = requests.post(
+            f"{self.api_p}/g/s/coupon/new-user-coupon/claim",
+            headers=self.headers)
+        return request.json()
+
     # get blog votes
     def get_blog_votes(self, ndc_Id: str, blog_Id: str):
         request = requests.get(
@@ -763,6 +795,70 @@ class Client():
         data = {"q": title, "start": start, "size": size}
         request = requests.post(
             f"{self.api_p}/g/s/community/search?q={title}&start={start}&size={size}",
+            json=data,
+            headers=self.headers)
+        return request.json()
+
+    # register account
+    def register(
+            self,
+            email: str,
+            password: str,
+            nickname: str,
+            verification_code: str):
+        data = {
+            "email": email,
+            "nickname": nickname,
+            "phoneNumber": "",
+            "secret2": password,
+            "validationContext": {
+                "data": {"code": verification_code},
+                "code": verification_code,
+                "identity": email,
+                "type": 1,
+                "__original": {
+                    "data": {"code": verification_code},
+                    "code": verification_code,
+                    "identity": email,
+                    "type": 1,
+                    "__response": {}
+                }}}
+        request = requests.post(
+            f"{self.api}/register",
+            json=data,
+            headers=self.headers)
+        return request.json()
+
+    # request security validation(request verify code)
+    def request_security_validation(
+            self,
+            email: str,
+            reset_password: bool = False):
+        data = {
+            "identity": email,
+            "type": 1,
+            "deviceID": self.device_Id
+        }
+        if reset_password is True:
+            data["level"] = 2
+            data["purpose"] = "reset-password"
+        request = requests.post(
+            f"{self.api_p}/g/s/auth/request-security-validation",
+            json=data,
+            headers=self.headers_v2)
+        return request.json()
+
+    # check security validation
+    def check_security_validation(self, email: str, verification_code: str):
+        data = {
+            "validationContext": {
+                {"data": {"code": verification_code},
+                 "identity": email,
+                 "type": 1,
+                 "verifyInfoKey": None
+                 }}}
+        request = requests.post(
+            f"{self.api}/auth/check-security-validation",
             json=data,
             headers=self.headers)
         return request.json()
