@@ -1,4 +1,4 @@
-# Library In Development created by LilZevi
+# Library In Development created by deluvsushi
 # I have not tested some functions.
 import requests
 import json
