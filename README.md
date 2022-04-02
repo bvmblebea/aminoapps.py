@@ -1,15 +1,13 @@
 # AminoLab
-AminoLab Api For https://aminoapps.com
-using https://aminoapps.com/api
-
+Web-API for aminoapps social network website
 ![AminoLab](https://play-lh.googleusercontent.com/DxURGS6RxF4zwTczWWsPwvaCAHcFUdaJH2JufTAq4fmq6vP4g1ec-U0UweTO-mNtXA=h500)
 
-### Installing
+## Installing
 `pip install AminoLab`
 
 ### Example
 ```python3
-#Login
+# Simple login
 import AminoLab
 client = AminoLab.Client()
 email = input("Email >> ")
