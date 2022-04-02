@@ -1,5 +1,5 @@
 # AminoLab
-Web-API for aminoapps social network website
+Web-API for [aminoapps](https://aminoapps.com) social network website
 ![AminoLab](https://play-lh.googleusercontent.com/DxURGS6RxF4zwTczWWsPwvaCAHcFUdaJH2JufTAq4fmq6vP4g1ec-U0UweTO-mNtXA=h500)
 
 ## Installing
