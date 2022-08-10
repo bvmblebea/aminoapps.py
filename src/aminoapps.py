@@ -2,9 +2,9 @@
 # I didn't test some functions
 import requests
 from json import loads
+from utils import objects
 from base64 import b64decode
 from functools import reduce
-from utils import objects, exception
 
 class AminoApps:
 	def __init__(self, device_id: str):
