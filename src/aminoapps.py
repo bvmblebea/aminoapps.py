@@ -4,11 +4,14 @@ from json import loads
 from utils import objects
 from base64 import b64decode
 from functools import reduce
+from html_to_json import convert
 
 class AminoApps:
 	def __init__(self, device_id: str):
 		self.api = "https://aminoapps.com/api"
 		self.web = "https://aminoapps.com/web"
+		self.community = "https://aminoapps.com/c"
+		self.partial = "https://aminoapps.com/partial"
 		self.device_id = device_id
 		self.headers = {
 			"user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/73.0.3683.86 Chrome/73.0.3683.86 Safari/537.36",
@@ -52,6 +55,18 @@ class AminoApps:
 			headers=self.headers).json()
 		return objects.ChatThreads(
 			response["result"]["threadList"]).ChatThreads
+
+	def get_joined_communities(self):
+		return convert(
+			requests.get(
+				f"{self.partial}/global-chat-communities",
+				headers=self.headers).text)
+
+	def search_community(self, query: str, page: int = 1):
+		return convert(
+			requests.get(
+				f"{self.partial}/community/search-suggestion?q={query}&page={page}",
+				headers=self.headers).text)
 
 	def send_message(
 			self,
@@ -297,13 +312,15 @@ class AminoApps:
 			headers=self.headers).json()
 	
 	def send_active_object(self, ndc_id: int):
-		data = {"ndcId": ndc_id}
+		data = {
+			"ndcId": ndc_id
+		}
 		return requests.post(
 			f"{self.api}/community/stats/web-user-active-time",
 			json=data,
 			headers=self.headers).json()
 	
-	def get_websocket_url(self):
+	def get_web_socket_url(self):
 		return requests.get(
 			f"{self.api}/chat/web-socket-url", headers=self.headers).json()
 
@@ -368,39 +385,9 @@ class AminoApps:
         
 	def get_blog_categories(self, ndc_id: int):
 		return requests.get(
-			f"{self.api}/get-blog-category?ndcId={ndc_id}", headers=self.headers).json()
-
-	# in development
-	def create_blog(
-			self,
-			ndc_id: int,
-			title: str,
-			content: str = None,
-			categories_list: list = None,
-			extensions: dict = None,
-			fans_only: bool = False,
-			type: int = 0):
-		media_list = []
-		data = {
-   	 	"postJSON": {
-  		  	"title": title,
- 		   	"content": content,
-    			"type": type,
-  		  	"mediaList": media_list,
- 		   	"extensions": extensions,
-   		 	"ndcId": ndc_id
-   		}
-		}
-		if fans_only:
-			data["extensions"] = {"fansOnly": fans_only}
-		elif categories_list:
-			data["taggedBlogCategoryIdList"] = categories_list
-		return requests.post(
-			f"{self.api}/blog",
-			json=data,
+			f"{self.api}/get-blog-category?ndcId={ndc_id}",
 			headers=self.headers).json()
 
-	# delete blog
 	def delete_blog(self, ndc_id: int, blog_id: str):
 		data = {
 			"ndcId": f"x{ndc_id}",
@@ -450,12 +437,14 @@ class AminoApps:
 	
 	def get_blog_votes(self, ndc_id: int, blog_id: str):
 		return requests.get(
-			f"{self.api}/x{ndc_id}/blog/{blog_id}/votes", headers=self.headers).json()
+			f"{self.api}/x{ndc_id}/blog/{blog_id}/votes",
+			headers=self.headers).json()
 	
 	
 	def poll_option(self, ndc_id: int, blog_id: str, option_id: str):
 		return requests.post(
-			f"{self.api}/poll-option/x{ndc_id}/{blog_id}/{option_id}/vote", headers=self.headers).json()
+			f"{self.api}/poll-option/x{ndc_id}/{blog_id}/{option_id}/vote",
+			headers=self.headers).json()
 	
 	
 	def register(
@@ -532,35 +521,31 @@ class AminoApps:
 			json=data,
 			headers=self.headers).json()
 	
-	def request_security_validation(self, email: str, type: int = 1):
-		data = {
-			"identity": email,
-			"type": type,
-			"verifyInfoKey": None
-		}
-		return requests.post(
-			f"{self.api}/auth/request-security-validation",
-			json=data,
-			headers=self.headers).json()
-	
 	def find_exist_single_chat(self, ndc_id: int, user_id: str):
-		data = {"ndcId": ndc_id, "uid": user_id}
+		data = {
+			"ndcId": ndc_id,
+			"uid": user_id
+		}
 		return requests.post(
 			f"{self.api}/find-exist-single-chat",
 			json=data,
 			headers=self.headers).json()
 	
 	def get_user_profile(self, ndc_id: int):
-		data = {"ndcId": ndc_id}
+		data = {
+			"ndcId": ndc_id
+		}
 		return requests.post(
 			f"{self.api}/get-user-profile",
 			json=data,
 			headers=self.headers).json()
 	
-	def delete_account(self, password: str):
-		data = {"secret": password}
+	def delete_account(self, secret: str):
+		data = {
+			"secret": secret
+		}
 		return requests.post(
-			f"{self.api}/account/delete-request/",
+			f"{self.api}/account/delete-request",
 			json=data,
 			headers=self.headers).json()
 	
@@ -598,8 +583,16 @@ class AminoApps:
 			headers=self.headers).json()
 	
 	def pick_locale(self, locale: str = "en"):
-		data = {"locale": locale}
+		data = {
+			"locale": locale
+		}
 		return requests.post(
 			f"{self.api}/pick-locale",
 			json=data,
 			headers=self.headers).json()
+
+	def get_public_chats(self, ndc_id: int):
+		return convert(
+			requests.get(
+				f"{self.partial}/public-chat-threads/x{ndc_id}",
+				headers=self.headers).text)
