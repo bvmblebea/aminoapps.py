@@ -5,6 +5,6 @@ Web-API for [aminoapps](https://aminoapps.com) social network
 ### Example
 ```python3
 import aminoapps
-aminoapps = aminoapps.AminoApps()
+aminoapps = aminoapps.AminoApps(device_id="")
 aminoapps.login_sid(sid="")
 ```
