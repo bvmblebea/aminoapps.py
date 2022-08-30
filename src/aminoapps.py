@@ -1,4 +1,3 @@
-# Library In Development created by deluvsushi
 # I didn't test some functions
 import requests
 from json import loads
