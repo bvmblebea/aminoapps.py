@@ -49,7 +49,7 @@ class MembersList:
 	def __init__(self, data):
 		self.json = data
 		self.icon = []
-        self.user_id = []
+		self.user_id = []
 		self.nickname = []
 		self.created_time = []
 	
