@@ -29,7 +29,6 @@ class AminoApps:
 		self.sid = sid
 		self.user_id = data["2"]
 		self.headers["cookie"] = f"sid={self.sid}"
-		self.headers["set-cookie"] = self.sid
 		return data
 	
 	def my_chat_threads(
